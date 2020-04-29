@@ -75,6 +75,7 @@ const byTicker: { [key: string]: FiatCurrency } = {
 const list = Object.keys(byTicker).map((k) => byTicker[k]);
 let userSupportedFiats = [];
 // Current list was established with what our API really supports
+/*
 setSupportedFiats([
   "CAD",
   "CHF",
@@ -91,6 +92,8 @@ setSupportedFiats([
   "TRY",
   "USD",
 ]);
+*/
+setSupportedFiats(Object.keys(byTicker));
 
 export function hasFiatCurrencyTicker(ticker: string): boolean {
   return ticker in byTicker;

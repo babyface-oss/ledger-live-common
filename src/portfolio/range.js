@@ -55,14 +55,12 @@ const experimental: { [k: PortfolioRange]: PortfolioRangeConfig } = {
     startOf: startOfWeek,
     granularityId: "WEEK",
   },
-  /*
   week: {
     count: 7 * 24,
     increment: hourIncrement,
     startOf: startOfHour,
-    granularityId: "HOUR"
-  }
-  */
+    granularityId: "HOUR",
+  },
 };
 
 const getPerPortfolioRanges = (): {
