@@ -83,6 +83,7 @@ export function toBitcoinResourcesRaw(
 ): BitcoinResourcesRaw {
   return {
     utxos: r.utxos.map(toBitcoinOutputRaw),
+    cashaddrFormatted: r.cashaddrFormatted,
   };
 }
 
@@ -91,5 +92,6 @@ export function fromBitcoinResourcesRaw(
 ): BitcoinResources {
   return {
     utxos: r.utxos.map(fromBitcoinOutputRaw),
+    cashaddrFormatted: r.cashaddrFormatted || false,
   };
 }

@@ -43,10 +43,12 @@ export type BitcoinOutputRaw = [
 
 export type BitcoinResources = {
   utxos: BitcoinOutput[],
+  cashaddrFormatted?: boolean,
 };
 
 export type BitcoinResourcesRaw = {
   utxos: BitcoinOutputRaw[],
+  cashaddrFormatted?: boolean,
 };
 
 declare class CoreBitcoinLikeInput {

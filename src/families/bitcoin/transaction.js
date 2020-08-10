@@ -1,5 +1,6 @@
 // @flow
 import { BigNumber } from "bignumber.js";
+import bchaddr from "bchaddrjs";
 import cashaddr from "cashaddrjs";
 import type {
   Transaction,
@@ -11,6 +12,7 @@ import type {
   CoreBitcoinLikeOutput,
   CoreBitcoinLikeInput,
   BitcoinInput,
+  BitcoinResources,
 } from "./types";
 import type { Account } from "../../types";
 import { bitcoinPickingStrategy } from "./types";
@@ -35,12 +37,23 @@ function bchExplicit(str: string): string {
   return str;
 }
 
+function bchIsCashaddrFormatted(existingAccount: ?Account) {
+  const cashaddrFormatted =
+    existingAccount && existingAccount.bitcoinResources
+      ? existingAccount.bitcoinResources.cashaddrFormatted || false // existing account would fallback to false (LL-2806)
+      : true; // default value of new accounts (LL-2806)
+  return cashaddrFormatted;
+}
+
 export type CoinLogic = {
   hasExtraData?: boolean,
   hasExpiryHeight?: boolean,
   getAdditionals?: ({ transaction: Transaction }) => string[],
   asLibcoreTransactionRecipient?: (string) => string,
   onScreenTransactionRecipient?: (string) => string,
+  postBuildBitcoinResources?: (Account, BitcoinResources) => BitcoinResources,
+  syncReplaceAddress?: (existingAccount: ?Account, addr: string) => string,
+  injectGetAddressParams?: (Account) => any,
 };
 
 export const perCoinLogic: { [_: CryptoCurrencyIds]: ?CoinLogic } = {
@@ -79,6 +92,27 @@ export const perCoinLogic: { [_: CryptoCurrencyIds]: ?CoinLogic } = {
     onScreenTransactionRecipient: (str: string): string => {
       const prefix = "bitcoincash:";
       return str.startsWith(prefix) ? str.slice(prefix.length) : str;
+    },
+
+    postBuildBitcoinResources: (account, bitcoinResources) => ({
+      ...bitcoinResources,
+      cashaddrFormatted: bchIsCashaddrFormatted(account),
+    }),
+
+    syncReplaceAddress: (existingAccount, addr) => {
+      // per LL-2806
+      if (bchIsCashaddrFormatted(existingAccount)) {
+        return bchaddr.toCashAddress(addr);
+      }
+      return addr;
+    },
+
+    injectGetAddressParams: (account) => {
+      if (bchIsCashaddrFormatted(account)) {
+        return {
+          forceFormat: "cashaddr",
+        };
+      }
     },
   },
 };

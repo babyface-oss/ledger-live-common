@@ -137,9 +137,11 @@ function shouldRefreshBitcoinResources(updatedRaw, account) {
   if (!account.bitcoinResources) return true;
   if (updatedRaw.blockHeight !== account.blockHeight) return true;
   if (updatedRaw.operations.length !== account.operations.length) return true;
+  const { bitcoinResources: existing } = account;
+  const { bitcoinResources: raw } = updatedRaw;
   return (
-    updatedRaw.bitcoinResources.utxos.length !==
-    account.bitcoinResources.utxos.length
+    raw.cashaddrFormatted !== existing.cashaddrFormatted ||
+    raw.utxos.length !== existing.utxos.length
   );
 }
 
